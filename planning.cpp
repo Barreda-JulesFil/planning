@@ -15,8 +15,6 @@ int main()
 	vector<pair<int, int>> binomes {};// Tableau dynamique de tous les binomes possibles (paire de 2 entiers)
 	vector<bool> bin_deja_tire {}; // Tableau dynamique pour savoir si un binôme a déjà été tiré
 	    
-	//srand(time(0));	// Initialisation du générateur de nombres aléatoires
-	    
 	// Demande du Nombre d'étudiants :
 	cout << "Entrez le nombre d'etudiants : ";
 	cin >> nombre_etudiants;
