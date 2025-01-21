@@ -45,7 +45,7 @@ int main()
 	
 	// Rangement par ordre aléatoire :
 	random_device rd;
-    mt19937 g(rd());
+	mt19937 g(rd());
 	shuffle (binomes.begin(), binomes.end(), g);
 	
 	// Affichage en colonne :
