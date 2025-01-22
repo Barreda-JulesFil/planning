@@ -11,6 +11,7 @@ int main()
 	int nombre_binomes;
 	int nombre_tp;
 	int tp;
+	int seance;
 	int i, j, k; // Indices pour boucles
 	vector<pair<int, int>> binomes {};// Tableau dynamique de tous les binomes possibles (paire de 2 entiers)
 	vector<bool> bin_deja_tire {}; // Tableau dynamique pour savoir si un binôme a déjà été tiré
@@ -63,39 +64,47 @@ int main()
 	{
 		etudiant_seance[i] = false;
 	}
-	
+		
 	// Constitution de la première seance :
 	i = 0;
 	tp = 0;
-	planning[0][tp] = binomes[i];
+	seance = 0;
+	planning[seance][tp] = binomes[i]; // Première paire 
 	bin_deja_tire[i] = true;
-	etudiant_seance[binomes[i].first] = true;
-	etudiant_seance[binomes[i].second] = true;
-	do // recherche de la paire suivante qui ne contient pas un étudiant déja tiré (A repeter N-2 fois...)
-	{
-		i++;
-	}
-	while ((etudiant_seance[binomes[i].first] == true) || (etudiant_seance[binomes[i].second] == true));
-	tp++;
-	planning[0][tp] = binomes[i];
-	bin_deja_tire[i] = true;
-	etudiant_seance[binomes[i].first] = true;
-	etudiant_seance[binomes[i].second] = true;
-	// On compléte avec la paire qui contient les 2 numéros non tirés
+	etudiant_seance[binomes[i].first - 1] = true;
+	etudiant_seance[binomes[i].second - 1] = true;
 	
-	// Affichage
+	do // Recherche des paires suivantes :
+	{		
+		do // Recherche la paire suivante qui ne contient pas un étudiant déja tiré :
+			i++;
+		while ((etudiant_seance[binomes[i].first - 1] == true) || (etudiant_seance[binomes[i].second - 1] == true));
+		tp++;
+		planning[seance][tp] = binomes[i];
+		bin_deja_tire[i] = true;
+		etudiant_seance[binomes[i].first - 1] = true;
+		etudiant_seance[binomes[i].second - 1] = true;
+	}
+	while (tp < (nombre_tp -1));
+		
+	// Affichage final :
 	cout << endl << "TP :\t";
 	for (i = 1; i <= nombre_tp; i++)
 	{
 		cout << char(64 + i) << "\t";
 	}
-	cout << endl;
+	cout << "CS" << endl;
 	for (i = 0; i < nombre_tp; i++)
 	{
 		cout << "S" << i+1 << " :\t";
-		for (j = 0; j < nombre_tp; j++) cout << "(" << planning[i][j].first << "," << planning[i][j].second << ")\t";
-		cout << endl;
+		int CS = 0; // Somme de contrôle
+		for (j = 0; j < nombre_tp; j++) 
+		{
+			cout << "(" << planning[i][j].first << "," << planning[i][j].second << ")\t";
+			CS = CS + planning[i][j].first + planning[i][j].second;
+		}
+		cout << CS << endl;
 	}
-		    
+			    
 	return 0;
 }
