@@ -44,6 +44,12 @@ int main()
 	nombre_binomes = (nombre_etudiants * (nombre_etudiants - 1)) / 2;
 	cout << "Il existe " << nombre_binomes << " binomes uniques." << endl;
 	
+	// Affichage en-tête :
+	cout << endl << "TP\t";
+	for (i = 1; i <= nombre_tp; i++)
+		cout << char(64 + i) << "\t";
+	cout << endl;
+	
 	// Génération des binômes uniques
 	k = 0;
 	for (i = 1; i <= nombre_etudiants; i++)
@@ -56,16 +62,10 @@ int main()
 		}
 	}
 	
-	// Rangement par ordre aléatoire :
+	// Tri aléatoire des binômes :
 	random_device rd;
 	mt19937 g(rd());
 	shuffle (binomes.begin(), binomes.end(), g);
-	
-	// Affichage en colonne :
-	for (i = 0; i < nombre_binomes; i++)
-	{
-		cout << i + 1 << ":\t(" << binomes[i].first << "," << binomes[i].second << ")" << endl;
-	}
 	
 	// Déclaration du tableau 2D planning
 	pair<int,int> planning[nombre_tp][nombre_tp];
@@ -73,22 +73,20 @@ int main()
 	// Déclaration + Initialisation d'un tableau de booléens pour savoir si un étudiant est déjà dans la séance :
 	bool etudiant_seance[nombre_etudiants];
 	for (i = 0; i < nombre_etudiants; i++)
-	{
 		etudiant_seance[i] = false;
-	}
 		
 	// Constitution de la première seance :
 	i = 0;
 	tp = 0;
 	seance = 0;
-	planning[seance][tp] = binomes[i]; // Première paire 
+	planning[seance][tp] = binomes[i]; // Première binôme 
 	bin_deja_tire[i] = true;
 	etudiant_seance[binomes[i].first - 1] = true;
 	etudiant_seance[binomes[i].second - 1] = true;
 	
 	do
-	{ // Recherche des paires suivantes :		
-		do // Recherche la paire suivante qui ne contient pas un étudiant déja tiré :
+	{ // Recherche des binômes suivants :		
+		do // Recherche le binôme suivant qui ne contient pas un étudiant déja tiré :
 			i++;
 		while ((etudiant_seance[binomes[i].first - 1] == true) || (etudiant_seance[binomes[i].second - 1] == true));
 		tp++;
@@ -98,25 +96,89 @@ int main()
 		etudiant_seance[binomes[i].second - 1] = true;
 	}
 	while (tp < (nombre_tp -1));
-		
-	// Affichage final :
-	cout << endl << "TP :\t";
-	for (i = 1; i <= nombre_tp; i++)
-	{
-		cout << char(64 + i) << "\t";
-	}
-	cout << "CS" << endl;
-	for (i = 0; i < nombre_tp; i++)
-	{
-		cout << "S" << i+1 << " :\t";
-		int CS = 0; // Somme de contrôle
-		for (j = 0; j < nombre_tp; j++) 
+	
+	// Affichage d'une séance :
+	cout << "S" << seance + 1 << "\t";
+	for (j = 0; j < nombre_tp; j++)
+		cout << "(" << planning[seance][j].first << "," << planning[seance][j].second << ")\t";
+	cout << endl;
+	
+	// Déclaration d'un tableau de booléens pour savoir si un étudiant est déjà dans une colonne TP :
+	bool etudiant_tp[nombre_etudiants];
+	
+	do
+	{ //Constitution des séances suivantes :
+		seance++;
+		tp = 0;
+		// RAZ des tableaux
+		for (i = 0; i < nombre_etudiants; i++)
 		{
-			cout << "(" << planning[i][j].first << "," << planning[i][j].second << ")\t";
-			CS = CS + planning[i][j].first + planning[i][j].second;
+			etudiant_tp[i] = false;	// RAZ tableau etudiant_tp[]
+			etudiant_seance[i] = false; // RAZ tableau etudiant_seance[]
 		}
-		cout << CS << endl;
+		
+		// Recherche des étudiants ayant déjà fait ce TP dans les séances précédentes
+		for (i = 0; i < seance; i++)
+		{
+			etudiant_tp[planning[i][tp].first - 1] = true;
+			etudiant_tp[planning[i][tp].second - 1] = true;
+		}
+		
+		i = 0;
+		// Recherche du premier binôme pas déjà tiré et n'ayant pas fait ce TP
+		while ((bin_deja_tire[i] == true) || (etudiant_tp[binomes[i].first - 1] == true) || (etudiant_tp[binomes[i].second - 1] == true))
+		{
+			i++;
+		}
+		// Binôme trouvé :
+		planning[seance][tp] = binomes[i];
+		bin_deja_tire[i] = true;
+		etudiant_seance[binomes[i].first - 1] = true;
+		etudiant_seance[binomes[i].second - 1] = true;
+		
+		do
+		{ // TP suivants :
+			tp++;
+			
+			for (i = 0; i < nombre_etudiants; i++)
+				etudiant_tp[i] = false;	// RAZ tableau etudiant_tp[]
+			
+			// Recherche des étudiants ayant déjà fait ce TP dans les séances précédentes
+			for (i = 0; i < seance; i++)
+			{
+				etudiant_tp[planning[i][tp].first - 1] = true;
+				etudiant_tp[planning[i][tp].second - 1] = true;
+			}
+			
+			i = 0;
+			// Recherche du premier binôme pas déjà tiré et n'ayant pas fait ce TP et dont un des éléments n'est pas déja sur la séance
+			while ((bin_deja_tire[i] == true) ||
+				   (etudiant_tp[binomes[i].first - 1] == true) || (etudiant_tp[binomes[i].second -1] == true) ||
+				   (etudiant_seance[binomes[i].first - 1] == true) || (etudiant_seance[binomes[i].second - 1] == true))
+			{
+				i++;
+				if (i == nombre_binomes) 
+				{
+					i = 0;
+					//break;
+				}
+			}
+			
+			// Binôme trouvé :
+			planning[seance][tp] = binomes[i];
+			bin_deja_tire[i] = true;
+			etudiant_seance[binomes[i].first - 1] = true;
+			etudiant_seance[binomes[i].second - 1] = true;
+		}
+		while (tp < (nombre_tp - 1));
+		
+		// Affichage d'une séance :
+		cout << "S" << seance + 1 << "\t";
+		for (j = 0; j < nombre_tp; j++)
+			cout << "(" << planning[seance][j].first << "," << planning[seance][j].second << ")\t";
+		cout << endl;
 	}
+	while (seance < (nombre_tp - 1));
 			    
 	return 0;
 }
