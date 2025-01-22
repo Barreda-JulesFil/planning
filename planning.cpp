@@ -15,16 +15,28 @@ int main()
 	int i, j, k; // Indices pour boucles
 	vector<pair<int, int>> binomes {};// Tableau dynamique de tous les binomes possibles (paire de 2 entiers)
 	vector<bool> bin_deja_tire {}; // Tableau dynamique pour savoir si un binôme a déjà été tiré
-	    
-	// Demande du Nombre d'étudiants :
-	cout << "Entrez le nombre d'etudiants : ";
-	cin >> nombre_etudiants;
-	if ((nombre_etudiants % 2) == 1) // Correction si nombre_etudiants impair
-	{
+
+	do
+	{ // Demande du Nombre d'étudiants :
+		cout << "Entrez le nombre d'etudiants : ";
+		while (! (cin >> nombre_etudiants) )
+		{ // Vérification si on n'entre pas un nombre
+			cout << "Ce n'est pas un nombre !" << endl;
+			cout << "Entrez le nombre d'etudiants : ";
+			cin.clear();
+			cin.ignore(40,'\n');
+		};
+		if (nombre_etudiants < 5)
+			cout << "Le nombre minimal d'etudiants est 5 !" << endl;
+	} 
+	while (nombre_etudiants < 5);
+	if ((nombre_etudiants % 2) == 1)
+	{ // Correction si nombre_etudiants impair
 		nombre_etudiants = nombre_etudiants + 1;
 		cout << "Nombre d'etudiants impair => ajout d'un etudiant fictif." << endl;
 		cout << "Nombre d'etudiants : " << nombre_etudiants << "." << endl;
 	}
+	
 	// Calcul du nombre de TP :
 	nombre_tp = nombre_etudiants / 2;
 	cout << "Votre planning devra comporter " << nombre_tp << " TPs : de A a " << char(64 + nombre_tp) << "." << endl;
@@ -74,8 +86,8 @@ int main()
 	etudiant_seance[binomes[i].first - 1] = true;
 	etudiant_seance[binomes[i].second - 1] = true;
 	
-	do // Recherche des paires suivantes :
-	{		
+	do
+	{ // Recherche des paires suivantes :		
 		do // Recherche la paire suivante qui ne contient pas un étudiant déja tiré :
 			i++;
 		while ((etudiant_seance[binomes[i].first - 1] == true) || (etudiant_seance[binomes[i].second - 1] == true));
