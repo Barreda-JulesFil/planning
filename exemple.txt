@@ -1,0 +1,42 @@
+Semaine 1 :
+TP 1 : Eleve 1 et Eleve 2
+TP 2 : Eleve 3 et Eleve 4
+TP 3 : Eleve 5 et Eleve 6
+TP 4 : Eleve 7 et Eleve 8
+TP 5 : Eleve 9 et Eleve 10
+TP 6 : Eleve 11 et Eleve 12
+Semaine 2 :
+TP 1 : Eleve 3 et Eleve 5
+TP 2 : Eleve 1 et Eleve 6
+TP 3 : Eleve 2 et Eleve 4
+TP 4 : Eleve 9 et Eleve 11
+TP 5 : Eleve 7 et Eleve 12
+TP 6 : Eleve 8 et Eleve 10
+Semaine 3 :
+TP 1 : Eleve 4 et Eleve 6
+TP 2 : Eleve 7 et Eleve 10
+TP 3 : Eleve 8 et Eleve 9
+TP 4 : Eleve 1 et Eleve 12
+TP 5 : Eleve 3 et Eleve 11
+TP 6 : Eleve 2 et Eleve 5
+Semaine 4 :
+TP 1 : Eleve 7 et Eleve 9
+TP 2 : Eleve 8 et Eleve 12
+TP 3 : Eleve 10 et Eleve 11
+TP 4 : Eleve 4 et Eleve 5
+TP 5 : Eleve 2 et Eleve 6
+TP 6 : Eleve 1 et Eleve 3
+Semaine 5 :
+TP 1 : Eleve 8 et Eleve 11
+TP 2 : Eleve 2 et Eleve 9
+TP 3 : Eleve 3 et Eleve 12
+TP 4 : Eleve 6 et Eleve 10
+TP 5 : Eleve 1 et Eleve 5
+TP 6 : Eleve 4 et Eleve 7
+Semaine 6 :
+TP 1 : Eleve 10 et Eleve 12
+TP 2 : Eleve 5 et Eleve 11
+TP 3 : Eleve 1 et Eleve 7
+TP 4 : Eleve 2 et Eleve 3
+TP 5 : Eleve 4 et Eleve 8
+TP 6 : Eleve 6 et Eleve 9
