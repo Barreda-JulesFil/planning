@@ -1,184 +1,174 @@
 #include <iostream>
-#include <random>
+//#include <vector>
 #include <algorithm>
+#include <fstream>
+#include <set>
+//#include <unordered_map>
+#include <unordered_set>
+//#include <string>
+#include <random>
+//#include <chrono>
 
 using namespace std;
 
-int main()
-{ // Programme principal :
-	// Déclaration des variables :
-	int nombre_etudiants;
-	int nombre_binomes;
-	int nombre_tp;
-	int tp;
-	int seance;
-	int i, j, k; // Indices pour boucles
-	vector<pair<int, int>> binomes {};// Tableau dynamique de tous les binomes possibles (paire de 2 entiers)
-	vector<bool> bin_deja_tire {}; // Tableau dynamique pour savoir si un binôme a déjà été tiré
+// Fonction pour générer tous les binômes possibles
+vector<pair<int, int> > genererBinomes(int nombreEtudiants) {
+    vector<pair<int, int> > binomes;
+    for (int i = 1; i <= nombreEtudiants; ++i) {
+        for (int j = i + 1; j <= nombreEtudiants; ++j) {
+            binomes.push_back({i, j});
+        }
+    }
+    return binomes;
+}
 
-	do
-	{ // Demande du Nombre d'étudiants :
-		cout << "Entrez le nombre d'etudiants : ";
-		while (! (cin >> nombre_etudiants) )
-		{ // Vérification si on n'entre pas un nombre
-			cout << "Ce n'est pas un nombre !" << endl;
-			cout << "Entrez le nombre d'etudiants : ";
-			cin.clear();
-			cin.ignore(40,'\n');
-		};
-		if (nombre_etudiants < 5)
-			cout << "Le nombre minimal d'etudiants est 5 !" << endl;
-	} 
-	while (nombre_etudiants < 5);
-	if ((nombre_etudiants % 2) == 1)
-	{ // Correction si nombre_etudiants impair
-		nombre_etudiants = nombre_etudiants + 1;
-		cout << "Nombre d'etudiants impair => ajout d'un etudiant fictif." << endl;
-		cout << "Nombre d'etudiants : " << nombre_etudiants << "." << endl;
-	}
-	
-	// Calcul du nombre de TP :
-	nombre_tp = nombre_etudiants / 2;
-	cout << "Votre planning devra comporter " << nombre_tp << " TPs : de A a " << char(64 + nombre_tp) << "." << endl;
-	// Calcul du nombre de binomes uniques
-	nombre_binomes = (nombre_etudiants * (nombre_etudiants - 1)) / 2;
-	cout << "Il existe " << nombre_binomes << " binomes uniques." << endl;
-	
-	// Affichage en-tête :
-	cout << endl << "TP\t";
-	for (i = 1; i <= nombre_tp; i++)
-		cout << char(64 + i) << "\t";
-	cout << endl;
-	
-	// Génération des binômes uniques
-	k = 0;
-	for (i = 1; i <= nombre_etudiants; i++)
-	{
-		for (j = i + 1; j <= nombre_etudiants; j++)
-		{
-			binomes.emplace_back(i, j);
-			bin_deja_tire.push_back(false);
-			k = k +1;
-		}
-	}
-	
-	// Tri aléatoire des binômes :
-	random_device rd;
-	mt19937 g(rd());
-	shuffle (binomes.begin(), binomes.end(), g);
-	
-	// Déclaration du tableau 2D planning
-	pair<int,int> planning[nombre_tp][nombre_tp];
-	
-	// Déclaration + Initialisation d'un tableau de booléens pour savoir si un étudiant est déjà dans la séance :
-	bool etudiant_seance[nombre_etudiants];
-	for (i = 0; i < nombre_etudiants; i++)
-		etudiant_seance[i] = false;
-		
-	// Constitution de la première seance :
-	i = 0;
-	tp = 0;
-	seance = 0;
-	planning[seance][tp] = binomes[i]; // Première binôme 
-	bin_deja_tire[i] = true;
-	etudiant_seance[binomes[i].first - 1] = true;
-	etudiant_seance[binomes[i].second - 1] = true;
-	
-	do
-	{ // Recherche des binômes suivants :		
-		do // Recherche le binôme suivant qui ne contient pas un étudiant déja tiré :
-			i++;
-		while ((etudiant_seance[binomes[i].first - 1] == true) || (etudiant_seance[binomes[i].second - 1] == true));
-		tp++;
-		planning[seance][tp] = binomes[i];
-		bin_deja_tire[i] = true;
-		etudiant_seance[binomes[i].first - 1] = true;
-		etudiant_seance[binomes[i].second - 1] = true;
-	}
-	while (tp < (nombre_tp -1));
-	
-	// Affichage d'une séance :
-	cout << "S" << seance + 1 << "\t";
-	for (j = 0; j < nombre_tp; j++)
-		cout << "(" << planning[seance][j].first << "," << planning[seance][j].second << ")\t";
-	cout << endl;
-	
-	// Déclaration d'un tableau de booléens pour savoir si un étudiant est déjà dans une colonne TP :
-	bool etudiant_tp[nombre_etudiants];
-	
-	do
-	{ //Constitution des séances suivantes :
-		seance++;
-		tp = 0;
-		// RAZ des tableaux
-		for (i = 0; i < nombre_etudiants; i++)
-		{
-			etudiant_tp[i] = false;	// RAZ tableau etudiant_tp[]
-			etudiant_seance[i] = false; // RAZ tableau etudiant_seance[]
-		}
-		
-		// Recherche des étudiants ayant déjà fait ce TP dans les séances précédentes
-		for (i = 0; i < seance; i++)
-		{
-			etudiant_tp[planning[i][tp].first - 1] = true;
-			etudiant_tp[planning[i][tp].second - 1] = true;
-		}
-		
-		i = 0;
-		// Recherche du premier binôme pas déjà tiré et n'ayant pas fait ce TP
-		while ((bin_deja_tire[i] == true) || (etudiant_tp[binomes[i].first - 1] == true) || (etudiant_tp[binomes[i].second - 1] == true))
-		{
-			i++;
-		}
-		// Binôme trouvé :
-		planning[seance][tp] = binomes[i];
-		bin_deja_tire[i] = true;
-		etudiant_seance[binomes[i].first - 1] = true;
-		etudiant_seance[binomes[i].second - 1] = true;
-		
-		do
-		{ // TP suivants :
-			tp++;
-			
-			for (i = 0; i < nombre_etudiants; i++)
-				etudiant_tp[i] = false;	// RAZ tableau etudiant_tp[]
-			
-			// Recherche des étudiants ayant déjà fait ce TP dans les séances précédentes
-			for (i = 0; i < seance; i++)
-			{
-				etudiant_tp[planning[i][tp].first - 1] = true;
-				etudiant_tp[planning[i][tp].second - 1] = true;
-			}
-			
-			i = 0;
-			// Recherche du premier binôme pas déjà tiré et n'ayant pas fait ce TP et dont un des éléments n'est pas déja sur la séance
-			while ((bin_deja_tire[i] == true) ||
-				   (etudiant_tp[binomes[i].first - 1] == true) || (etudiant_tp[binomes[i].second -1] == true) ||
-				   (etudiant_seance[binomes[i].first - 1] == true) || (etudiant_seance[binomes[i].second - 1] == true))
-			{
-				i++;
-				if (i == nombre_binomes) 
-				{
-					i = 0;
-					//break;
-				}
-			}
-			
-			// Binôme trouvé :
-			planning[seance][tp] = binomes[i];
-			bin_deja_tire[i] = true;
-			etudiant_seance[binomes[i].first - 1] = true;
-			etudiant_seance[binomes[i].second - 1] = true;
-		}
-		while (tp < (nombre_tp - 1));
-		
-		// Affichage d'une séance :
-		cout << "S" << seance + 1 << "\t";
-		for (j = 0; j < nombre_tp; j++)
-			cout << "(" << planning[seance][j].first << "," << planning[seance][j].second << ")\t";
-		cout << endl;
-	}
-	while (seance < (nombre_tp - 1));
-			    
-	return 0;
+// Fonction pour mélanger aléatoirement un vecteur
+void melanger(vector<pair<int, int> >& binomes) {
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+    shuffle(binomes.begin(), binomes.end(), default_random_engine(seed));
+}
+
+// Fonction principale
+int main() {
+    int nombreEtudiants;
+    cout << "Entrez le nombre d'etudiants : ";
+    cin >> nombreEtudiants;
+
+    // Ajouter un étudiant fictif si le nombre est impair
+    if (nombreEtudiants % 2 != 0) {
+        cout << "Ajout d'un etudiant fictif pour equilibrer les binomes." << endl;
+        nombreEtudiants++;
+    }
+
+    // Calcul du nombre de TP nécessaires
+    int nombreTP = nombreEtudiants / 2; // Nombre de TP par semaine
+    cout << "Nombre de TP necessaires par semaine : " << nombreTP << endl;
+
+    // Le nombre de semaines est égal au nombre de TP
+    int nombreSemaines = nombreTP;
+
+    vector<char> tps;
+    for (int i = 0; i < nombreTP; ++i) {
+        tps.push_back('A' + i); // TP A, B, C...
+    }
+
+    vector<pair<int, int>> binomes = genererBinomes(nombreEtudiants); // Tous les binômes possibles
+    vector<vector<pair<pair<int, int>, char>>> planning; // Chaque semaine associe un binôme à un TP
+    set<pair<int, int>> binomesUtilisesGlobalement; // Suivi des binômes déjà utilisés dans toutes les semaines
+
+    // Associer chaque étudiant aux TP qu'il a déjà réalisés
+    unordered_map<int, unordered_set<char>> etudiantTP;
+
+    cout << "Calcul du planning en cours..." << endl;
+
+    while (true) {
+        planning.clear();
+        etudiantTP.clear();
+        binomesUtilisesGlobalement.clear();
+        bool tirageReussi = true;
+
+        for (int semaine = 1; semaine <= nombreSemaines; ++semaine) {
+            vector<pair<pair<int, int>, char>> semaineBinomes;
+            unordered_set<int> etudiantsUtilises; // Vérifier qu'un étudiant n'est pas déjà dans un binôme cette semaine
+            vector<char> tpRestants = tps;       // TP disponibles cette semaine
+            melanger(binomes);
+
+            for (const auto& binome : binomes) {
+                if (tpRestants.empty()) break; // Plus de TP disponibles cette semaine
+
+                // Vérifier que le binôme est unique globalement
+                if (binomesUtilisesGlobalement.find(binome) == binomesUtilisesGlobalement.end() &&
+                    etudiantsUtilises.find(binome.first) == etudiantsUtilises.end() &&
+                    etudiantsUtilises.find(binome.second) == etudiantsUtilises.end()) {
+                    
+                    // Chercher un TP valide pour ce binôme
+                    char tpAssigne = '\0';
+                    for (char tp : tpRestants) {
+                        if (etudiantTP[binome.first].find(tp) == etudiantTP[binome.first].end() &&
+                            etudiantTP[binome.second].find(tp) == etudiantTP[binome.second].end()) {
+                            tpAssigne = tp;
+                            break;
+                        }
+                    }
+
+                    if (tpAssigne != '\0') {
+                        // Ajouter le binôme et assigner le TP
+                        semaineBinomes.push_back({binome, tpAssigne});
+                        etudiantsUtilises.insert(binome.first);
+                        etudiantsUtilises.insert(binome.second);
+                        etudiantTP[binome.first].insert(tpAssigne);
+                        etudiantTP[binome.second].insert(tpAssigne);
+                        tpRestants.erase(remove(tpRestants.begin(), tpRestants.end(), tpAssigne), tpRestants.end());
+                        binomesUtilisesGlobalement.insert(binome); // Marquer ce binôme comme utilisé
+                    }
+
+                    if (semaineBinomes.size() == nombreTP) break;
+                }
+            }
+
+            // Vérifier si le tirage est valide
+            if (semaineBinomes.size() != nombreTP) {
+                //cout << "Tirage invalide. Recommencement..." << endl;
+                tirageReussi = false;
+                break;
+            }
+
+            planning.push_back(semaineBinomes);
+        }
+
+        if (tirageReussi) break; // Sortir de la boucle si le tirage est réussi
+    }
+
+    // Afficher le planning final (avec les TP triés dans l'ordre)
+    cout << endl;
+    cout << "Planning final sur " << nombreSemaines << " semaines :" << endl;
+
+    for (int itp = 0; itp < tps.size(); ++itp) {
+        cout << "\t" << tps[itp];
+    }
+    cout << endl;
+
+    for (size_t semaine = 0; semaine < planning.size(); ++semaine) {
+        cout << "S" << semaine + 1 << ":";
+
+        // Trier les binômes par TP pour afficher dans l'ordre des TP
+        sort(planning[semaine].begin(), planning[semaine].end(),
+             [](const pair<pair<int, int>, char>& a, const pair<pair<int, int>, char>& b) {
+                 return a.second < b.second; // Comparer les TP (A, B, C...)
+             });
+
+        for (size_t i = 0; i < planning[semaine].size(); ++i) {
+            auto binome = planning[semaine][i].first;
+            //char tp = planning[semaine][i].second;
+            //cout << "TP " << tp << " : Etudiants " << binome.first << " et " << binome.second << endl;
+            cout << "\t" << binome.first << "-" << binome.second;
+        }
+        cout << endl;
+    }
+/*
+    // Demander si l'utilisateur souhaite exporter en CSV
+    char choix;
+    cout << "Souhaitez-vous exporter le planning au format CSV ? (o/n) : ";
+    cin >> choix;
+
+    if (choix == 'o' || choix == 'O') {
+        ofstream fichier("planning_tp.csv");
+        fichier << "Semaine,TP,Etudiant 1,Etudiant 2\n";
+        for (size_t semaine = 0; semaine < planning.size(); ++semaine) {
+            for (size_t i = 0; i < planning[semaine].size(); ++i) {
+                auto binome = planning[semaine][i].first;
+                char tp = planning[semaine][i].second;
+                fichier << "Semaine " << semaine + 1 << ",";
+                fichier << tp << ",";
+                fichier << binome.first << ",";
+                fichier << binome.second << "\n";
+            }
+        }
+        fichier.close();
+        cout << "Planning exporte dans le fichier 'planning_tp.csv'." << endl;
+    } else {
+        cout << "Exportation annulee." << endl;
+    }
+*/
+    return 0;
 }
