@@ -1,4 +1,4 @@
-ntrez le nombre d'etudiants : 16
+Entrez le nombre d'etudiants : 16
 Nombre de TP necessaires par semaine : 8
 Calcul du planning en cours...
 
